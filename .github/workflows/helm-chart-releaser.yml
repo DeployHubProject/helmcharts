@@ -5,15 +5,22 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *" # poll upstream hourly
   repository_dispatch:
     types:
       - generate-main-chart
+
+concurrency:
+  group: release-charts
+  cancel-in-progress: false
 
 jobs:
   setenv:
     runs-on: ubuntu-latest
 
     outputs:
+      skip: ${{ steps.env.outputs.skip }}
       short_sha: ${{ steps.env.outputs.short_sha }}
       chart_version: ${{ steps.env.outputs.chart_version }}
       image_version: ${{ steps.env.outputs.image_version }}
@@ -46,16 +53,34 @@ jobs:
           BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           BRANCH=$(echo "${{ env.BRANCH }}" | cut -d'/' -f1)
-          BASE_VERSION=$(curl -s "https://ortelius.github.io/helmcharts/index.yaml" | grep version: | awk '{print $2}' | cut -f1-2 -d. | sort -u -r --version-sort | head -1)          SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-6)
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-6)
+
+          # Latest upstream release, e.g. 12.0.230
+          VERSION=$(git ls-remote --tags --refs https://github.com/ortelius/helmcharts.git 'v*' \
+            | awk '{print $2}' | sed 's#refs/tags/v##' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          if [ -z "${VERSION}" ]; then
+            echo "Could not determine upstream version" >&2
+            exit 1
+          fi
+
+          # On scheduled polls, skip if this repo already released that version
+          SKIP=false
+          if [ "${{ github.event_name }}" = "schedule" ] \
+             && git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
+            SKIP=true
+          fi
+
           {
+            echo "skip=${SKIP}"
             echo "dhurl=${{ env.DHURL }}"
             echo "branch=${BRANCH}"
-            echo "chart_version=${BASE_VERSION}.${{ github.run_number }}"
+            echo "chart_version=${VERSION}"
             echo "compname=ortelius"
-            echo "image_repo_tag=${{ env.REGISTRY }}/${{ github.repository }}:${BRANCH}-v${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
+            echo "image_repo_tag=${{ env.REGISTRY }}/${{ github.repository }}:${BRANCH}-v${VERSION}-g${SHORT_SHA}"
             echo "image_repository=${{ env.REGISTRY }}/${{ github.repository }}"
-            echo "image_tag=${BRANCH}-v${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
-            echo "image_version=${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
+            echo "image_tag=${BRANCH}-v${VERSION}-g${SHORT_SHA}"
+            echo "image_version=${VERSION}-g${SHORT_SHA}"
             echo "registry=${{ env.REGISTRY }}"
             echo "short_sha=${SHORT_SHA}"
             echo "gh_handle=$GITHUB_ACTOR"
@@ -63,7 +88,8 @@ jobs:
 
   release:
     needs: setenv
-    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@dbab314a13206c5754e909f8130cf1bd514defb9
+    if: ${{ needs.setenv.outputs.skip != 'true' }}
+    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@<NEW_TOOLKIT_SHA>
     with:
       gh_repository_owner: ${{ github.repository_owner }}
       gh_event_name: ${{ github.event_name }}
