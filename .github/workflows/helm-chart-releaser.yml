@@ -89,7 +89,7 @@ jobs:
   release:
     needs: setenv
     if: ${{ needs.setenv.outputs.skip != 'true' }}
-    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@<NEW_TOOLKIT_SHA>
+    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@f4062b84b3bc7105a902b9bb440e1b1bf3b3743a
     with:
       gh_repository_owner: ${{ github.repository_owner }}
       gh_event_name: ${{ github.event_name }}
