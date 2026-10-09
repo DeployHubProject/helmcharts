@@ -78,4 +78,4 @@ jobs:
       GPG_KEYRING_BASE64: ${{ secrets.GPG_KEYRING_BASE64 }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       GPG_KEY: ${{ secrets.GPG_KEY }}
-      gh_token: ${{ secrets.HELM_INDEXER_TOKEN }}
+      gh_token: ${{ secrets.DH_HELM_INDEXER_TOKEN }}
