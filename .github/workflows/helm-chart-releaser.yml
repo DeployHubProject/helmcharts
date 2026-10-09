@@ -63,7 +63,7 @@ jobs:
 
   release:
     needs: setenv
-    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml
+    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@dbab314a13206c5754e909f8130cf1bd514defb9
     with:
       gh_repository_owner: ${{ github.repository_owner }}
       gh_event_name: ${{ github.event_name }}
