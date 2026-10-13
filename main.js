@@ -5,7 +5,7 @@ require('process')
 
 const chartRepos = [
   'DeployHubProject/arangodb',
-  'DeployHubProject/backend',
+  'DeployHubProject/ortelius',
   'DeployHubProject/frontend',
   'DeployHubProject/osvdev-job',  
   'DeployHubProject/relscanner-job' 
