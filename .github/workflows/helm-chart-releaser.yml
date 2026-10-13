@@ -9,16 +9,13 @@ on:
     types:
       - generate-main-chart
 
-concurrency:
-  group: release-charts
-  cancel-in-progress: false
-
 jobs:
   setenv:
     runs-on: ubuntu-latest
 
     outputs:
       short_sha: ${{ steps.env.outputs.short_sha }}
+      chart_version: ${{ steps.env.outputs.chart_version }}
       image_version: ${{ steps.env.outputs.image_version }}
       image_tag: ${{ steps.env.outputs.image_tag }}
       image_repo_tag: ${{ steps.env.outputs.image_repo_tag }}
@@ -49,16 +46,16 @@ jobs:
           BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           BRANCH=$(echo "${{ env.BRANCH }}" | cut -d'/' -f1)
-          SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-6)
-
+          BASE_VERSION=$(curl -s "https://DeployHubProject.github.io/helmcharts/index.yaml" | grep version: | awk '{print $2}' | cut -f1-2 -d. | sort -u -r --version-sort | head -1)          SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-6)
           {
             echo "dhurl=${{ env.DHURL }}"
             echo "branch=${BRANCH}"
+            echo "chart_version=${BASE_VERSION}.${{ github.run_number }}"
             echo "compname=ortelius"
-            echo "image_repo_tag=${{ env.REGISTRY }}/${{ github.repository }}:${BRANCH}-g${SHORT_SHA}"
+            echo "image_repo_tag=${{ env.REGISTRY }}/${{ github.repository }}:${BRANCH}-v${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
             echo "image_repository=${{ env.REGISTRY }}/${{ github.repository }}"
-            echo "image_tag=${BRANCH}-g${SHORT_SHA}"
-            echo "image_version=g${SHORT_SHA}"
+            echo "image_tag=${BRANCH}-v${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
+            echo "image_version=${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
             echo "registry=${{ env.REGISTRY }}"
             echo "short_sha=${SHORT_SHA}"
             echo "gh_handle=$GITHUB_ACTOR"
@@ -66,15 +63,15 @@ jobs:
 
   release:
     needs: setenv
-    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@f4062b84b3bc7105a902b9bb440e1b1bf3b3743a
+    uses: DeployHubProject/workflow-toolkit/.github/workflows/helm-release-workflow.yml@0abf58800631f8b7cb9c4a330ccb2bd2318112eb
     with:
       gh_repository_owner: ${{ github.repository_owner }}
       gh_event_name: ${{ github.event_name }}
       gh_ref: ${{ github.ref }}
       gh_handle: ${{ needs.setenv.outputs.gh_handle }}
       chart: charts/${{ needs.setenv.outputs.compname }}
-      chart_version: ''
-      image_repository: ${{ needs.needs.setenv.outputs.image_repository }}
+      chart_version: ${{ github.event_name != 'repository_dispatch' && needs.setenv.outputs.chart_version || '' }}
+      image_repository: ${{ needs.setenv.outputs.image_repository }}
       image_tag: ${{ needs.setenv.outputs.image_tag }}
       run_number: ${{ github.run_number }}
     secrets:
