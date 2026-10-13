@@ -19,7 +19,7 @@ async function getChartEntries () {
     sha = response.data.sha
   })
 
-  const url = 'https://raw.githubusercontent.com/DeployHubProject/helmcharts/' + sha + '/charts/DeployHubProject/Chart.yaml'
+  const url = 'https://raw.githubusercontent.com/DeployHubProject/helmcharts/' + sha + '/charts/ortelius/Chart.yaml'
   let parts = []
   let latest = ''
   let ver = ''
@@ -79,13 +79,13 @@ function createYamlOutput () {
     dependencies: chartEntries
   }, { noArrayIndent: true })
 
-  fs.readFile('./charts/DeployHubProject/README.md', 'utf8', function (err, data) {
+  fs.readFile('./charts/ortelius/README.md', 'utf8', function (err, data) {
     if (err) {
       return console.log(err)
     }
     const result = data.replace(/DEPLOYHUB_VERSION=\d+\.\d+\.\d+/g, 'DEPLOYHUB_VERSION=' + chartVersion)
 
-    fs.writeFile('./charts/DeployHubProject/README.md', result, 'utf8', function (err) {
+    fs.writeFile('./charts/ortelius/README.md', result, 'utf8', function (err) {
       if (err) return console.log(err)
     })
   })
@@ -100,7 +100,7 @@ let chartVersion = ''
 getChartEntries().then(() => {
   const yamlOutput = createYamlOutput()
   console.log(yamlOutput)
-  fs.writeFileSync('./charts/DeployHubProject/Chart.yaml', yamlOutput, 'utf8', (err) => {
+  fs.writeFileSync('./charts/ortelius/Chart.yaml', yamlOutput, 'utf8', (err) => {
     console.log(err)
   })
 })
