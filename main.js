@@ -5,7 +5,7 @@ require('process')
 
 const chartRepos = [
   'DeployHubProject/arangodb',
-  'DeployHubProject/DeployHubProject',
+  'DeployHubProject/backend',
   'DeployHubProject/frontend',
   'DeployHubProject/osvdev-job',  
   'DeployHubProject/relscanner-job' 
@@ -71,7 +71,7 @@ function createYamlOutput () {
     name: 'DeployHubProject',
     description: 'Post-Deployment Vulnerability Detection and AI Remediation',
     home: 'https://DeployHubProject.io',
-    icon: 'https://DeployHubProject.github.io/helmcharts/DeployHubProject.svg',
+    icon: 'https://DeployHubProject.github.io/helmcharts/ortelius.svg',
     keywords: ['Vulnerability', 'Remediation', 'AI', 'SBOM'],
     type: 'application',
     version: chartVersion,
