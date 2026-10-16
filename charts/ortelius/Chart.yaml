@@ -9,7 +9,7 @@ keywords:
   - AI
   - SBOM
 type: application
-version: 12.0.125
+version: 12.0.126
 appVersion: 12.0.0
 dependencies:
   - name: arangodb
