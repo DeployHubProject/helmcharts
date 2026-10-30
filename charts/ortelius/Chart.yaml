@@ -9,7 +9,7 @@ keywords:
   - AI
   - SBOM
 type: application
-version: 12.0.163
+version: 12.0.164
 appVersion: 12.0.0
 dependencies:
   - name: arangodb
@@ -22,7 +22,7 @@ dependencies:
     version: 12.0.24
     repository: https://DeployHubProject.github.io/frontend/
   - name: osvdev-job
-    version: 12.0.6
+    version: 12.0.7
     repository: https://DeployHubProject.github.io/osvdev-job/
   - name: relscanner-job
     version: 12.0.13
