@@ -36,6 +36,39 @@ entries:
     version: 12.0.419
   - apiVersion: v2
     appVersion: 12.0.0
+    created: "2026-10-30T22:48:59.672997546Z"
+    dependencies:
+    - name: arangodb
+      repository: https://DeployHubProject.github.io/arangodb/
+      version: 12.0.9
+    - name: ortelius
+      repository: https://DeployHubProject.github.io/ortelius/
+      version: 12.0.13
+    - name: frontend
+      repository: https://DeployHubProject.github.io/frontend/
+      version: 12.0.27
+    - name: osvdev-job
+      repository: https://DeployHubProject.github.io/osvdev-job/
+      version: 12.0.7
+    - name: relscanner-job
+      repository: https://DeployHubProject.github.io/relscanner-job/
+      version: 12.0.17
+    description: Post-Deployment Vulnerability Detection and AI Remediation
+    digest: 70adac75df25bc04cb466f7343255cc5c42e19292684df97a443c7d9ad90f8ef
+    home: https://DeployHubProject.io
+    icon: https://DeployHubProject.github.io/helmcharts/ortelius.svg
+    keywords:
+    - Vulnerability
+    - Remediation
+    - AI
+    - SBOM
+    name: DeployHubProject
+    type: application
+    urls:
+    - https://github.com/DeployHubProject/helmcharts/releases/download/v12.0.169/DeployHubProject-12.0.169.tgz
+    version: 12.0.169
+  - apiVersion: v2
+    appVersion: 12.0.0
     created: "2026-10-30T22:03:34.941414278Z"
     dependencies:
     - name: arangodb
@@ -1156,4 +1189,4 @@ entries:
     urls:
     - https://github.com/DeployHubProject/helmcharts/releases/download/v12.0.118/DeployHubProject-12.0.118.tgz
     version: 12.0.118
-generated: "2026-10-30T22:03:34.940057535Z"
+generated: "2026-10-30T22:48:59.670676592Z"
