@@ -1,31 +1,34 @@
-const axios = require('axios')
 const yaml = require('js-yaml')
 const fs = require('fs')
 require('process')
 
 const chartRepos = [
-  'DeployHubProject/arangodb',
-  'DeployHubProject/ortelius',
-  'DeployHubProject/frontend',
-  'DeployHubProject/osvdev-job',  
-  'DeployHubProject/relscanner-job' 
+  'ortelius/arangodb',
+  'ortelius/ortelius',
+  'ortelius/frontend',
+  'ortelius/osvdev-job',  
+  'ortelius/relscanner-job' 
 ]
 
 // Helper functions
+async function get (url) {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + url)
+  return res
+}
+
 async function getChartEntries () {
   let sha = ''
 
-  await axios.get('https://api.github.com/repos/DeployHubProject/helmcharts/commits/main').then(response => {
-    sha = response.data.sha
-  })
+  sha = (await (await get('https://api.github.com/repos/ortelius/helmcharts/commits/main')).json()).sha
 
-  const url = 'https://raw.githubusercontent.com/DeployHubProject/helmcharts/' + sha + '/charts/ortelius/Chart.yaml'
+  const url = 'https://raw.githubusercontent.com/ortelius/helmcharts/' + sha + '/charts/ortelius/Chart.yaml'
   let parts = []
   let latest = ''
   let ver = ''
 
-  await axios.get(url).then(response => {
-      const parsedYaml = yaml.load(response.data)
+  await get(url).then(res => res.text()).then(data => {
+      const parsedYaml = yaml.load(data)
       chartVersion = parsedYaml.version
       parts = chartVersion.split('.')
       parts[2] = process.env.RUN_NUMBER
@@ -35,14 +38,12 @@ async function getChartEntries () {
   const latestChart = []
 
   for (let i = 0; i < chartRepos.length; i++) {
-    await axios.get('https://api.github.com/repos/' + chartRepos[i] + '/commits/gh-pages').then(response => {
-      sha = response.data.sha
-    })
+    sha = (await (await get('https://api.github.com/repos/' + chartRepos[i] + '/commits/gh-pages')).json()).sha
 
     const repoUrl = 'https://raw.githubusercontent.com/' + chartRepos[i] + '/' + sha + '/index.yaml'
 
-    await axios.get(repoUrl).then(response => {
-      const parsedYaml = yaml.load(response.data)
+    await get(repoUrl).then(res => res.text()).then(data => {
+      const parsedYaml = yaml.load(data)
       const entries = parsedYaml.entries
 
       Object.keys(entries).forEach(key => {
@@ -56,7 +57,7 @@ async function getChartEntries () {
         const dep = {}
         dep.name = latest.name
         dep.version = latest.version
-        dep.repository = 'https://DeployHubProject.github.io/' + key + '/'
+        dep.repository = 'https://ortelius.github.io/' + key + '/'
         latestChart.push(dep)
       })
     })
@@ -68,10 +69,10 @@ async function getChartEntries () {
 function createYamlOutput () {
   const output = yaml.dump({
     apiVersion: 'v2',
-    name: 'DeployHubProject',
+    name: 'ortelius',
     description: 'Post-Deployment Vulnerability Detection and AI Remediation',
-    home: 'https://DeployHubProject.io',
-    icon: 'https://DeployHubProject.github.io/helmcharts/ortelius.svg',
+    home: 'https://ortelius.io',
+    icon: 'https://ortelius.github.io/helmcharts/ortelius.svg',
     keywords: ['Vulnerability', 'Remediation', 'AI', 'SBOM'],
     type: 'application',
     version: chartVersion,
