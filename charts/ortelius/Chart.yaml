@@ -1,29 +1,29 @@
 apiVersion: v2
-name: DeployHubProject
+name: ortelius
 description: Post-Deployment Vulnerability Detection and AI Remediation
-home: https://DeployHubProject.io
-icon: https://DeployHubProject.github.io/helmcharts/ortelius.svg
+home: https://ortelius.io
+icon: https://ortelius.github.io/helmcharts/ortelius.svg
 keywords:
   - Vulnerability
   - Remediation
   - AI
   - SBOM
 type: application
-version: 12.0.169
+version: 12.0.171
 appVersion: 12.0.0
 dependencies:
   - name: arangodb
-    version: 12.0.9
-    repository: https://DeployHubProject.github.io/arangodb/
+    version: 12.0.26
+    repository: https://ortelius.github.io/arangodb/
   - name: ortelius
-    version: 12.0.13
-    repository: https://DeployHubProject.github.io/ortelius/
+    version: 12.0.544
+    repository: https://ortelius.github.io/ortelius/
   - name: frontend
-    version: 12.0.27
-    repository: https://DeployHubProject.github.io/frontend/
+    version: 12.0.1658
+    repository: https://ortelius.github.io/frontend/
   - name: osvdev-job
-    version: 12.0.7
-    repository: https://DeployHubProject.github.io/osvdev-job/
+    version: 12.0.238
+    repository: https://ortelius.github.io/osvdev-job/
   - name: relscanner-job
-    version: 12.0.17
-    repository: https://DeployHubProject.github.io/relscanner-job/
+    version: 12.0.1211
+    repository: https://ortelius.github.io/relscanner-job/
